@@ -87,3 +87,69 @@ impl ItemCollection {
     }
 
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Testing for ItemCollection.
+    #[test]
+    /// Test pushing an item to a ItemCollection.
+    fn test_push_item() {
+        let mut collection = ItemCollection::new();
+        assert_eq!(collection.items.len(), 0);
+        let item = Item::default();
+        collection.push(ItemWrapper::Item(item));
+        assert_eq!(collection.items.len(), 1);
+    }
+
+    #[test]
+    /// Test sorting an ItemCollection by date.
+    fn test_sort_date() {
+        let mut collection = ItemCollection::new();
+
+        let mut item1 = Item::default();
+        item1.set_pub_date(String::from("2018-01-01"));
+        let mut item2 = Item::default();
+        item2.set_pub_date(String::from("2018-01-02"));
+        let mut item3 = Item::default();
+        item3.set_pub_date(String::from("2018-01-03"));
+
+        // Push items in 'wrong' order.
+        collection.push(ItemWrapper::Item(item1));
+        collection.push(ItemWrapper::Item(item3));
+        collection.push(ItemWrapper::Item(item2));
+
+        collection.sort(SortType::Date);
+        // We expect the items to be in the 'right' order.
+        assert_eq!(collection.items[0].pub_date().unwrap(), String::from("2018-01-01"));
+        assert_eq!(collection.items[1].pub_date().unwrap(), String::from("2018-01-02"));
+        assert_eq!(collection.items[2].pub_date().unwrap(), String::from("2018-01-03"));
+    }
+
+    #[test]
+    /// Test sorting an ItemCollection by author.
+    fn test_sort_author() {
+        let mut collection = ItemCollection::new();
+
+        let mut item1 = Item::default();
+        item1.set_author(String::from("author1"));
+        let mut item2 = Item::default();
+        item2.set_author(String::from("author2"));
+        let mut item3 = Item::default();
+        item3.set_author(String::from("author3"));
+
+        // Push items in 'wrong' order.
+        collection.push(ItemWrapper::Item(item1));
+        collection.push(ItemWrapper::Item(item3));
+        collection.push(ItemWrapper::Item(item2));
+
+        collection.sort(SortType::Author);
+        // We expect the items to be in the 'right' order.
+        assert_eq!(collection.items[0].author().unwrap(), String::from("author1"));
+        assert_eq!(collection.items[1].author().unwrap(), String::from("author2"));
+        assert_eq!(collection.items[2].author().unwrap(), String::from("author3"));
+    }
+
+}
