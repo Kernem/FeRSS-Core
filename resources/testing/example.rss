@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/" version="2.0">
+  <channel>
+    <title>Example title</title>
+    <link>https://www.rust-lang.org/</link>
+    <description />
+    <pubDate>Wed, 29 Dec 2021 14:41:07 GMT</pubDate>
+    <dc:date>2021-12-29T14:41:07Z</dc:date>
+    <item>
+      <title>First item title</title>
+      <link>https://www.rust-lang.org/</link>
+      <description>First item description</description>
+      <category>First category</category>
+      <pubDate>Wed, 29 Dec 2021 14:41:07 GMT</pubDate>
+      <guid isPermaLink="false">1.15789882</guid>
+      <dc:date>2021-12-29T14:41:07Z</dc:date>
+    </item>
+    <item>
+      <title>Second item title</title>
+      <link>https://www.rust-lang.org/</link>
+      <description>Second item description</description>
+      <category>Second category</category>
+      <pubDate>Wed, 29 Dec 2021 14:38:33 GMT</pubDate>
+      <guid isPermaLink="false">1.15789871</guid>
+      <dc:date>2021-12-29T14:38:33Z</dc:date>
+    </item>
+    <item>
+      <title>Third item title</title>
+      <link>https://www.rust-lang.org/</link>
+      <description>Third item description</description>
+      <category>First category</category>
+      <pubDate>Wed, 29 Dec 2021 14:30:30 GMT</pubDate>
+      <guid isPermaLink="false">1.15789864</guid>
+      <dc:date>2021-12-29T14:30:30Z</dc:date>
+    </item>
+  </channel>
+</rss>
