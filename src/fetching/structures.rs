@@ -152,4 +152,76 @@ mod tests {
         assert_eq!(collection.items[2].author().unwrap(), String::from("author3"));
     }
 
+    // Testing for ChannelCollection.
+    #[test]
+    /// Test pushing a channel to a ChannelCollection.
+    fn test_push_channel() {
+        let collection = ChannelCollection::new();
+        assert_eq!(collection.channels.lock().unwrap().items.len(), 0);
+
+        // Check empty channel.
+        let channel = Channel::default();
+        collection.push(channel);
+        assert_eq!(collection.channels.lock().unwrap().items.len(), 0);
+
+        // Check nonempty channel.
+        let mut channel = Channel::default();
+        let item = Item::default();
+        channel.set_items(vec![item]);
+        collection.push(channel);
+    }
+
+    #[test]
+    /// Test sorting a ChannelCollection by date.
+    fn test_sort_channel_date() {
+        let collection = ChannelCollection::new();
+
+        // TODO: Instead of adding channels, add items to channels.
+        let mut channel1 = Channel::default();
+
+        let mut item1 = Item::default();
+        item1.set_pub_date(String::from("2018-01-01"));
+        let mut item2 = Item::default();
+        item2.set_pub_date(String::from("2018-01-02"));
+        let mut item3 = Item::default();
+        item3.set_pub_date(String::from("2018-01-03"));
+
+        channel1.set_items(vec![item1, item2, item3]);
+
+
+        // Push items in 'wrong' order.
+        collection.push(channel1);
+
+        collection.sort(SortType::Date);
+        // We expect the items to be in the 'right' order.
+        assert_eq!(collection.channels.lock().unwrap().items[0].pub_date().unwrap(), String::from("2018-01-01"));
+        assert_eq!(collection.channels.lock().unwrap().items[1].pub_date().unwrap(), String::from("2018-01-02"));
+        assert_eq!(collection.channels.lock().unwrap().items[2].pub_date().unwrap(), String::from("2018-01-03"));
+    }
+
+    #[test]
+    /// Test sorting a ChannelCollection by author.
+    fn test_sort_channel_author() {
+        let collection = ChannelCollection::new();
+
+        let mut channel1 = Channel::default();
+
+        let mut item1 = Item::default();
+        item1.set_author(String::from("author1"));
+        let mut item2 = Item::default();
+        item2.set_author(String::from("author2"));
+        let mut item3 = Item::default();
+        item3.set_author(String::from("author3"));
+
+        channel1.set_items(vec![item1, item2, item3]);
+
+        // Push items in 'wrong' order.
+        collection.push(channel1);
+
+        collection.sort(SortType::Author);
+        // We expect the items to be in the 'right' order.
+        assert_eq!(collection.channels.lock().unwrap().items[0].author().unwrap(), String::from("author1"));
+        assert_eq!(collection.channels.lock().unwrap().items[1].author().unwrap(), String::from("author2"));
+        assert_eq!(collection.channels.lock().unwrap().items[2].author().unwrap(), String::from("author3"));
+    }
 }
