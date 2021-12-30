@@ -15,6 +15,8 @@ enum ItemWrapper {
 pub struct ChannelCollection {
     /// A mutex is necessary in this case as later the vector will be edited by multiple threads running asynchronously.
     channels: Mutex<ItemCollection>,
+    // TODO: Change channels to actually hold channels and add a second field
+    //       being an item collection holding references to the items in the channels.
 }
 
 impl ChannelCollection {
@@ -176,7 +178,6 @@ mod tests {
     fn test_sort_channel_date() {
         let collection = ChannelCollection::new();
 
-        // TODO: Instead of adding channels, add items to channels.
         let mut channel1 = Channel::default();
 
         let mut item1 = Item::default();
