@@ -6,24 +6,20 @@ pub enum SortType {
     Date,
     Author,
 }
-
-enum ItemWrapper {
-    Item(Item),
-    Channel(Channel),
-}
-
-pub struct ChannelCollection {
+/// A collection of channel borrows.
+pub struct ChannelCollection<'a> {
     /// A mutex is necessary in this case as later the vector will be edited by multiple threads running asynchronously.
-    channels: Mutex<ItemCollection>,
-    // TODO: Change channels to actually hold channels and add a second field
-    //       being an item collection holding references to the items in the channels.
+    channels: Mutex<Vec<&'a Channel>>,
+    /// Keeping a direct reference to the items will hopefully speed up some retrievals.
+    items: Mutex<ItemCollection<'a>>,
 }
 
-impl ChannelCollection {
+impl<'a> ChannelCollection<'a> {
     /// Create a new ChannelCollection.
-    pub fn new() -> ChannelCollection {
+    pub fn new() -> ChannelCollection<'a> {
         ChannelCollection {
-            channels: Mutex::new(ItemCollection::new()),
+            channels: Mutex::new(vec![]),
+            items: Mutex::new(ItemCollection::new()),
         }
     }
 
@@ -31,43 +27,34 @@ impl ChannelCollection {
     /// This function will block until it receives lock on the channels mutex.
     /// # Panics
     /// This function panics if another thread panicked while holding the lock.
-    pub fn push(&self, channel: Channel) {
+    pub fn push(&self, channel: &'a Channel) {
+        // Lock once and perform all operations
+        // This helps avoid deadlocks
         let mut channels = self.channels.lock().unwrap();
-        channels.push(ItemWrapper::Channel(channel));
-    }
-
-    /// Push a new channel to the collection.
-    /// This function will block until it receives lock on the channels mutex.
-    /// # Panics
-    /// This function panics if another thread panicked while holding the lock.
-    pub fn push_item(&self, item: Item) {
-        let mut channels = self.channels.lock().unwrap();
-        channels.push(ItemWrapper::Item(item));
+        let items = self.items.lock().unwrap();
+        for item in channel.items() {
+            items.push(item);
+        }
+        channels.push(channel);
     }
 }
 
-struct ItemCollection {
-    items: Vec<Item>,
+/// A collection of item borrows.
+struct ItemCollection<'a> {
+    items: Vec<&'a Item>,
 }
 
-impl ItemCollection {
+impl<'a> ItemCollection<'a> {
     /// Create a new ItemCollection.
-    pub fn new() -> ItemCollection {
+    pub fn new() -> ItemCollection<'a> {
         ItemCollection {
             items: Vec::new(),
         }
     }
 
-    /// Push a new item or items from a channel to the collection.
-    fn push(&mut self, wrapper: ItemWrapper) {
-        match wrapper {
-            ItemWrapper::Item(item) => self.items.push(item.to_owned()),
-            ItemWrapper::Channel(channel) => {
-                for item in channel.items() {
-                    self.items.push(item.to_owned());
-                }
-            }
-        }
+    /// Push a new item to the collection.
+    fn push(&mut self, item: &'a Item) {
+        self.items.push(item);
     }
 
 }
@@ -84,7 +71,7 @@ mod tests {
         let mut collection = ItemCollection::new();
         assert_eq!(collection.items.len(), 0);
         let item = Item::default();
-        collection.push(ItemWrapper::Item(item));
+        collection.push(&item);
         assert_eq!(collection.items.len(), 1);
     }
 
@@ -93,17 +80,20 @@ mod tests {
     /// Test pushing a channel to a ChannelCollection.
     fn test_push_channel() {
         let collection = ChannelCollection::new();
-        assert_eq!(collection.channels.lock().unwrap().items.len(), 0);
+        assert_eq!(collection.channels.lock().unwrap().len(), 0);
 
         // Check empty channel.
         let channel = Channel::default();
-        collection.push(channel);
-        assert_eq!(collection.channels.lock().unwrap().items.len(), 0);
+        collection.push(&channel);
+        assert_eq!(collection.channels.lock().unwrap().len(), 1);
+        assert_eq!(collection.items.lock().unwrap().items.len(), 0);
 
         // Check nonempty channel.
         let mut channel = Channel::default();
         let item = Item::default();
         channel.set_items(vec![item]);
-        collection.push(channel);
+        collection.push(&channel);
+        assert_eq!(collection.channels.lock().unwrap().len(), 2);
+        assert_eq!(collection.items.lock().unwrap().items.len(), 1);
     }
 }
