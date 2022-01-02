@@ -31,7 +31,7 @@ impl<'a> ChannelCollection<'a> {
         // Lock once and perform all operations
         // This helps avoid deadlocks
         let mut channels = self.channels.lock().unwrap();
-        let items = self.items.lock().unwrap();
+        let mut items = self.items.lock().unwrap();
         for item in channel.items() {
             items.push(item);
         }
