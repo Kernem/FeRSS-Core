@@ -15,9 +15,7 @@ pub struct ItemCollection<'a> {
 impl<'a> ItemCollection<'a> {
     /// Create a new ItemCollection.
     pub fn new() -> ItemCollection<'a> {
-        ItemCollection {
-            items: Vec::new(),
-        }
+        ItemCollection { items: Vec::new() }
     }
 
     /// Push a new item to the collection.
@@ -78,7 +76,6 @@ mod tests {
         item2.set_pub_date(String::from("2018-01-02"));
         item2.set_title(String::from("b"));
         item2.set_description(Some(String::from("aa")));
-
 
         let mut item3 = Item::default();
         item3.set_pub_date(String::from("2018-01-03"));

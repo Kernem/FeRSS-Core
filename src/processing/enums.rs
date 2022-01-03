@@ -14,4 +14,3 @@ pub enum ItemSortType {
     /// Sort by the item's length.
     Length,
 }
-

@@ -2,8 +2,8 @@
 use std::{error::Error, io::BufReader};
 
 // third-party imports
-use rss::Channel;
 use regex::Regex;
+use rss::Channel;
 
 /// Fetch the contents from the given URL.
 fn get(uri: &str) -> Result<String, Box<dyn Error>> {
