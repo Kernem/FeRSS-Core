@@ -16,6 +16,12 @@ pub struct ChannelCollection<'a> {
     items: Mutex<ItemCollection<'a>>,
 }
 
+impl<'a> Default for ChannelCollection<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'a> ChannelCollection<'a> {
     /// Create a new ChannelCollection.
     pub fn new() -> ChannelCollection<'a> {
@@ -48,7 +54,7 @@ impl<'a> ChannelCollection<'a> {
         let lock = self.channels.lock().unwrap();
         let mut channels = vec![];
         for channel in lock.iter() {
-            channels.push(channel.clone());
+            channels.push(<&Channel>::clone(channel));
         }
         channels
     }
@@ -61,7 +67,7 @@ impl<'a> ChannelCollection<'a> {
         let lock = self.items.lock().unwrap();
         let mut items: Vec<&Item> = vec![];
         for item in lock.items() {
-            items.push(&item.clone());
+            items.push(<&Item>::clone(item));
         }
         items
     }
@@ -77,7 +83,7 @@ impl<'a> ChannelCollection<'a> {
             }
             ChannelSortType::Publisher => {
                 let mut channels = self.channels.lock().unwrap();
-                channels.sort_by(|a, b| a.title().cmp(&b.title()));
+                channels.sort_by(|a, b| a.title().cmp(b.title()));
             }
         }
         self.items()

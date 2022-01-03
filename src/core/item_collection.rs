@@ -12,6 +12,12 @@ pub struct ItemCollection<'a> {
     items: Vec<&'a Item>,
 }
 
+impl<'a> Default for ItemCollection<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'a> ItemCollection<'a> {
     /// Create a new ItemCollection.
     pub fn new() -> ItemCollection<'a> {
@@ -36,12 +42,12 @@ impl<'a> ItemCollection<'a> {
             ItemSortType::Length => self.items.sort_by(|a, b| {
                 if let Some(a_description) = a.description() {
                     if let Some(b_description) = b.description() {
-                        return a_description.len().cmp(&b_description.len());
+                        a_description.len().cmp(&b_description.len())
                     } else {
-                        return Ordering::Greater;
+                        Ordering::Greater
                     }
                 } else {
-                    return Ordering::Less;
+                    Ordering::Less
                 }
             }),
         };
