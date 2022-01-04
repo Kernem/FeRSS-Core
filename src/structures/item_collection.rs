@@ -5,7 +5,7 @@ use std::cmp::Ordering;
 use rss::Item;
 
 // Local Imports
-use crate::processing::enums::ItemSortType;
+use crate::processing::enums::{ItemSortType, ItemFilterType};
 
 /// A collection of item borrows.
 pub struct ItemCollection<'a> {
@@ -52,6 +52,33 @@ impl<'a> ItemCollection<'a> {
             }),
         };
         &self.items
+    }
+
+    /// Filter the items in the collection.
+    pub fn filter(&mut self, filter_type: ItemFilterType) -> Vec<&&'a Item> {
+        match filter_type {
+            ItemFilterType::Title(title) => {let a:Vec<_> = self.items.iter().filter(|item| {
+                if let Some(item_title) = item.title() {
+                    item_title.contains(&title)
+                } else {
+                    false
+                }
+            }).collect();a},
+            ItemFilterType::Date(date) => {let a:Vec<_> = self.items.iter().filter(|item| {
+                if let Some(item_date) = item.pub_date() {
+                    item_date.contains(&date)
+                } else {
+                    false
+                }
+            }).collect();a},
+            ItemFilterType::Length(length) => {let a:Vec<_> = self.items.iter().filter(|item| {
+                if let Some(item_description) = item.description() {
+                    item_description.len() < length
+                } else {
+                    false
+                }
+            }).collect();a}
+        }
     }
 }
 
@@ -106,5 +133,44 @@ mod tests {
         assert_eq!(item_collection.items()[0].description(), Some("a"));
         assert_eq!(item_collection.items()[1].description(), Some("aa"));
         assert_eq!(item_collection.items()[2].description(), Some("aaa"));
+    }
+
+    #[test]
+    fn test_item_collection_filter() {
+        let mut item_collection = ItemCollection::new();
+
+        // Items
+        let mut item = Item::default();
+        item.set_pub_date(String::from("2018-01-01"));
+        item.set_title(String::from("a"));
+        item.set_description(Some(String::from("a")));
+
+        let mut item2 = Item::default();
+        item2.set_pub_date(String::from("2018-01-02"));
+        item2.set_title(String::from("ab"));
+        item2.set_description(Some(String::from("aa")));
+
+        let mut item3 = Item::default();
+        item3.set_pub_date(String::from("2018-01-03"));
+        item3.set_title(String::from("c"));
+        item3.set_description(Some(String::from("aaa")));
+
+        item_collection.push(&item);
+        item_collection.push(&item3);
+        item_collection.push(&item2);
+
+        let items = item_collection.filter(ItemFilterType::Title(String::from("a")));
+        assert_eq!(items.len(), 2);
+        let items = item_collection.filter(ItemFilterType::Title(String::from("b")));
+        assert_eq!(items.len(), 1);
+
+        let items = item_collection.filter(ItemFilterType::Date(String::from("2018-01-01")));
+        assert_eq!(items.len(), 1);
+
+        let items = item_collection.filter(ItemFilterType::Length(3));
+        assert_eq!(items.len(), 2);
+
+        // Check that the original collection is not changed
+        assert_eq!(item_collection.items().len(), 3);
     }
 }
