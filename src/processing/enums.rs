@@ -18,8 +18,8 @@ pub enum ItemSortType {
 pub enum ChannelFilterType {
     /// Filter by items.
     ItemFilterType(ItemFilterType),
-    /// Filter by the channel's publisher.
-    Publisher,
+    /// Filter by the channel's name. Ensuring that the name matches the string.
+    Name(String),
 }
 
 pub enum ItemFilterType {

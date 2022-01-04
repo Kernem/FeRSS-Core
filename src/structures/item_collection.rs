@@ -1,5 +1,5 @@
 // Standard Library Imports
-use std::cmp::Ordering;
+use std::{cmp::Ordering, ops::Deref};
 
 // External Imports
 use rss::Item;
@@ -30,12 +30,12 @@ impl<'a> ItemCollection<'a> {
     }
 
     /// Return a reference to the items in the collection.
-    pub fn items(&self) -> &Vec<&'a Item> {
+    pub fn items(&self) -> &Vec<&Item> {
         &self.items
     }
 
     /// Sort the items in the collection.
-    pub fn sort(&mut self, sort_type: ItemSortType) -> &Vec<&'a Item> {
+    pub fn sort(&mut self, sort_type: ItemSortType) -> &Vec<&Item> {
         match sort_type {
             ItemSortType::Title => self.items.sort_by(|a, b| a.title().cmp(&b.title())),
             ItemSortType::Date => self.items.sort_by(|a, b| a.pub_date().cmp(&b.pub_date())),
@@ -55,10 +55,10 @@ impl<'a> ItemCollection<'a> {
     }
 
     /// Filter the items in the collection.
-    pub fn filter(&mut self, filter_type: ItemFilterType) -> Vec<&&'a Item> {
+    pub fn filter(&mut self, filter_type: ItemFilterType) -> Vec<&Item> {
         match filter_type {
             ItemFilterType::Title(title) => {
-                let a: Vec<_> = self
+                let filtered_items: Vec<_> = self
                     .items
                     .iter()
                     .filter(|item| {
@@ -68,11 +68,12 @@ impl<'a> ItemCollection<'a> {
                             false
                         }
                     })
+                    .map(|item| item.deref())
                     .collect();
-                a
+                filtered_items
             }
             ItemFilterType::Date(date) => {
-                let a: Vec<_> = self
+                let filtered_items: Vec<_> = self
                     .items
                     .iter()
                     .filter(|item| {
@@ -82,11 +83,12 @@ impl<'a> ItemCollection<'a> {
                             false
                         }
                     })
+                    .map(|item| item.deref())
                     .collect();
-                a
+                filtered_items
             }
             ItemFilterType::Length(length) => {
-                let a: Vec<_> = self
+                let filtered_items: Vec<_> = self
                     .items
                     .iter()
                     .filter(|item| {
@@ -96,8 +98,9 @@ impl<'a> ItemCollection<'a> {
                             false
                         }
                     })
+                    .map(|item| item.deref())
                     .collect();
-                a
+                filtered_items
             }
         }
     }
