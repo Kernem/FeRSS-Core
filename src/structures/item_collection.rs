@@ -5,7 +5,7 @@ use std::cmp::Ordering;
 use rss::Item;
 
 // Local Imports
-use crate::processing::enums::{ItemSortType, ItemFilterType};
+use crate::processing::enums::{ItemFilterType, ItemSortType};
 
 /// A collection of item borrows.
 pub struct ItemCollection<'a> {
@@ -57,27 +57,48 @@ impl<'a> ItemCollection<'a> {
     /// Filter the items in the collection.
     pub fn filter(&mut self, filter_type: ItemFilterType) -> Vec<&&'a Item> {
         match filter_type {
-            ItemFilterType::Title(title) => {let a:Vec<_> = self.items.iter().filter(|item| {
-                if let Some(item_title) = item.title() {
-                    item_title.contains(&title)
-                } else {
-                    false
-                }
-            }).collect();a},
-            ItemFilterType::Date(date) => {let a:Vec<_> = self.items.iter().filter(|item| {
-                if let Some(item_date) = item.pub_date() {
-                    item_date.contains(&date)
-                } else {
-                    false
-                }
-            }).collect();a},
-            ItemFilterType::Length(length) => {let a:Vec<_> = self.items.iter().filter(|item| {
-                if let Some(item_description) = item.description() {
-                    item_description.len() < length
-                } else {
-                    false
-                }
-            }).collect();a}
+            ItemFilterType::Title(title) => {
+                let a: Vec<_> = self
+                    .items
+                    .iter()
+                    .filter(|item| {
+                        if let Some(item_title) = item.title() {
+                            item_title.contains(&title)
+                        } else {
+                            false
+                        }
+                    })
+                    .collect();
+                a
+            }
+            ItemFilterType::Date(date) => {
+                let a: Vec<_> = self
+                    .items
+                    .iter()
+                    .filter(|item| {
+                        if let Some(item_date) = item.pub_date() {
+                            item_date.contains(&date)
+                        } else {
+                            false
+                        }
+                    })
+                    .collect();
+                a
+            }
+            ItemFilterType::Length(length) => {
+                let a: Vec<_> = self
+                    .items
+                    .iter()
+                    .filter(|item| {
+                        if let Some(item_description) = item.description() {
+                            item_description.len() < length
+                        } else {
+                            false
+                        }
+                    })
+                    .collect();
+                a
+            }
         }
     }
 }
