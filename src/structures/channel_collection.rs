@@ -83,9 +83,7 @@ impl<'a> ChannelCollection<'a> {
                 let filtered_channels: Vec<&Channel> = self.channels.iter().filter(|channel| {
                     channel.title.contains(&name)
                 })
-                .map(|channel| {
-                    *channel
-                })
+                .copied()
                 .collect();
                 let mut items = Vec::new();
                 for channel in filtered_channels {
