@@ -3,7 +3,7 @@ use rss::{Channel, Item};
 
 // Local Imports
 use super::item_collection::ItemCollection;
-use crate::processing::enums::{ChannelSortType, ChannelFilterType};
+use crate::processing::enums::{ChannelFilterType, ChannelSortType};
 
 /// A collection of channel borrows.
 pub struct ChannelCollection<'a> {
@@ -76,15 +76,14 @@ impl<'a> ChannelCollection<'a> {
 
     pub fn filter(&mut self, filter_type: ChannelFilterType) -> Vec<&Item> {
         match filter_type {
-            ChannelFilterType::ItemFilterType(filter_type) => {
-                self.items.filter(filter_type)
-            }
+            ChannelFilterType::ItemFilterType(filter_type) => self.items.filter(filter_type),
             ChannelFilterType::Name(name) => {
-                let filtered_channels: Vec<&Channel> = self.channels.iter().filter(|channel| {
-                    channel.title.contains(&name)
-                })
-                .copied()
-                .collect();
+                let filtered_channels: Vec<&Channel> = self
+                    .channels
+                    .iter()
+                    .filter(|channel| channel.title.contains(&name))
+                    .copied()
+                    .collect();
                 let mut items = Vec::new();
                 for channel in filtered_channels {
                     for item in channel.items() {
@@ -99,7 +98,7 @@ impl<'a> ChannelCollection<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::processing::enums::{ItemSortType, ChannelFilterType, ItemFilterType};
+    use crate::processing::enums::{ChannelFilterType, ItemFilterType, ItemSortType};
 
     use super::*;
 
@@ -240,18 +239,25 @@ mod tests {
         assert_eq!(channel_collection.channels().len(), 3);
         assert_eq!(channel_collection.items().len(), 4);
 
-        let filtered_collection = channel_collection.filter(ChannelFilterType::Name(String::from("b")));
+        let filtered_collection =
+            channel_collection.filter(ChannelFilterType::Name(String::from("b")));
         assert_eq!(filtered_collection.len(), 1);
 
-        let filtered_collection = channel_collection.filter(ChannelFilterType::ItemFilterType(ItemFilterType::Title(String::from("b"))));
+        let filtered_collection = channel_collection.filter(ChannelFilterType::ItemFilterType(
+            ItemFilterType::Title(String::from("b")),
+        ));
         assert_eq!(filtered_collection.len(), 1);
 
-        let filtered_collection = channel_collection.filter(ChannelFilterType::ItemFilterType(ItemFilterType::Length(17)));
+        let filtered_collection = channel_collection.filter(ChannelFilterType::ItemFilterType(
+            ItemFilterType::Length(17),
+        ));
         assert_eq!(filtered_collection.len(), 2);
 
-        let filtered_collection = channel_collection.filter(ChannelFilterType::ItemFilterType(ItemFilterType::Date(String::from("2020-01-01"))));
+        let filtered_collection = channel_collection.filter(ChannelFilterType::ItemFilterType(
+            ItemFilterType::Date(String::from("2020-01-01")),
+        ));
         assert_eq!(filtered_collection.len(), 1);
-    
+
         // Check that the original collection is unchanged
         assert_eq!(channel_collection.channels().len(), 3);
         assert_eq!(channel_collection.items().len(), 4);
