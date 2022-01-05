@@ -1,3 +1,5 @@
+//! Set of functions for fetching and parsing rss feeds.
+
 // std imports
 use std::{error::Error, io::BufReader};
 
