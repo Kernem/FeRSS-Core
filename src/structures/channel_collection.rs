@@ -1,3 +1,5 @@
+//! Definition and implementation of the channel collection.
+
 // External Imports
 use rss::{Channel, Item};
 
@@ -5,7 +7,7 @@ use rss::{Channel, Item};
 use super::item_collection::ItemCollection;
 use crate::processing::enums::{ChannelFilterType, ChannelSortType};
 
-/// A collection of channel borrows.
+/// A collection of channels.
 pub struct ChannelCollection<'a> {
     channels: Vec<&'a Channel>,
     /// Keeping a direct reference to the items will hopefully speed up some retrievals.
@@ -18,8 +20,9 @@ impl<'a> Default for ChannelCollection<'a> {
     }
 }
 
+/// Function implementations for ChannelCollection.
 impl<'a> ChannelCollection<'a> {
-    /// Create a new ChannelCollection.
+    /// Create a new empty ChannelCollection.
     pub fn new() -> ChannelCollection<'a> {
         ChannelCollection {
             channels: vec![],
@@ -36,10 +39,7 @@ impl<'a> ChannelCollection<'a> {
     }
 
     /// Return a reference to the channels.
-    /// This function will block until it receives lock on the channels mutex.
-    /// # Panics
-    /// This function panics if another thread panicked while holding the lock.
-    pub fn channels(&self) -> Vec<&'a Channel> {
+    pub fn channels(&self) -> Vec<&Channel> {
         let mut channels = vec![];
         for channel in self.channels.iter() {
             channels.push(<&Channel>::clone(channel));
@@ -48,9 +48,6 @@ impl<'a> ChannelCollection<'a> {
     }
 
     /// Return a reference to the items.
-    /// This function will block until it receives lock on the channels mutex.
-    /// # Panics
-    /// This function panics if another thread panicked while holding the lock.
     pub fn items(&self) -> Vec<&Item> {
         let mut items: Vec<&Item> = vec![];
         for item in self.items.items() {
@@ -59,9 +56,10 @@ impl<'a> ChannelCollection<'a> {
         items
     }
 
-    /// Sort the channels in the collection.
+    /// Sort the items in the collection and return a reference to them.
     /// This will either sort by channel properties, returning the items within in an arbitrary order
     /// or by item properties, returning the channels in an arbitrary order.
+    /// This alters the actual order of the channels and items stored in the collection.
     pub fn sort(&mut self, sort_type: ChannelSortType) -> Vec<&Item> {
         match sort_type {
             ChannelSortType::ItemSortType(item_sort_type) => {
@@ -74,6 +72,8 @@ impl<'a> ChannelCollection<'a> {
         self.items()
     }
 
+    /// Filter the items in the collection and return a reference to them.
+    /// This does *not* remove any items from the actual collection, rather it returns a new vector containing references to the collection's items. 
     pub fn filter(&mut self, filter_type: ChannelFilterType) -> Vec<&Item> {
         match filter_type {
             ChannelFilterType::ItemFilterType(filter_type) => self.items.filter(filter_type),

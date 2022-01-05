@@ -1,4 +1,6 @@
-/// Defines how a struct should sort itself.
+//! Sorting and Filtering enums.
+
+/// Defines how a ChannelCollection should be sorted.
 pub enum ChannelSortType {
     /// Sort by items.
     ItemSortType(ItemSortType),
@@ -6,6 +8,7 @@ pub enum ChannelSortType {
     Publisher,
 }
 
+/// Defines how an ItemCollection should be sorted,
 pub enum ItemSortType {
     /// Sort by the item's title.
     Title,
@@ -15,6 +18,7 @@ pub enum ItemSortType {
     Length,
 }
 
+/// Defines how a ChannelCollection should be filtered.
 pub enum ChannelFilterType {
     /// Filter by items.
     ItemFilterType(ItemFilterType),
@@ -22,6 +26,7 @@ pub enum ChannelFilterType {
     Name(String),
 }
 
+/// Defines how an ItemCollection should be filtered.
 pub enum ItemFilterType {
     /// Filter by the item's title. Ensuring that the title matches the string.
     Title(String),

@@ -1,3 +1,4 @@
+//! FeRSS Library
 mod fetching;
 mod processing;
 mod structures;
