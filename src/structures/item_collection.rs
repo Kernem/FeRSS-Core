@@ -1,3 +1,5 @@
+//! Definition and implementation of the item collection.
+
 // Standard Library Imports
 use std::{cmp::Ordering, ops::Deref};
 
@@ -7,7 +9,7 @@ use rss::Item;
 // Local Imports
 use crate::processing::enums::{ItemFilterType, ItemSortType};
 
-/// A collection of item borrows.
+/// A collection of items.
 pub struct ItemCollection<'a> {
     items: Vec<&'a Item>,
 }
@@ -18,6 +20,7 @@ impl<'a> Default for ItemCollection<'a> {
     }
 }
 
+/// Function implementations for ItemCollection.
 impl<'a> ItemCollection<'a> {
     /// Create a new ItemCollection.
     pub fn new() -> ItemCollection<'a> {
@@ -35,6 +38,7 @@ impl<'a> ItemCollection<'a> {
     }
 
     /// Sort the items in the collection.
+    /// This alters the actual order of the items stored in the collection.
     pub fn sort(&mut self, sort_type: ItemSortType) -> &Vec<&Item> {
         match sort_type {
             ItemSortType::Title => self.items.sort_by(|a, b| a.title().cmp(&b.title())),
@@ -55,6 +59,7 @@ impl<'a> ItemCollection<'a> {
     }
 
     /// Filter the items in the collection.
+    /// This does *not* remove any items from the actual collection, rather it returns a new vector containing references to the collection's items. 
     pub fn filter(&mut self, filter_type: ItemFilterType) -> Vec<&Item> {
         match filter_type {
             ItemFilterType::Title(title) => {
