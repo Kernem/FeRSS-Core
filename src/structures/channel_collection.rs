@@ -9,7 +9,7 @@ use crate::processing::enums::{ChannelFilterType, ChannelSortType};
 
 /// A collection of channels.
 pub struct ChannelCollection<'a> {
-    channels: Vec<&'a Channel>,
+    channels: Vec<Channel>,
     /// Keeping a direct reference to the items will hopefully speed up some retrievals.
     items: ItemCollection<'a>,
 }
@@ -31,7 +31,7 @@ impl<'a> ChannelCollection<'a> {
     }
 
     /// Push a new channel to the collection.
-    pub fn push(&mut self, channel: &'a Channel) {
+    pub fn push(&mut self, channel: Channel) {
         for item in channel.items() {
             self.items.push(item);
         }
@@ -42,7 +42,7 @@ impl<'a> ChannelCollection<'a> {
     pub fn channels(&self) -> Vec<&Channel> {
         let mut channels = vec![];
         for channel in self.channels.iter() {
-            channels.push(<&Channel>::clone(channel));
+            channels.push(channel);
         }
         channels
     }
@@ -82,7 +82,6 @@ impl<'a> ChannelCollection<'a> {
                     .channels
                     .iter()
                     .filter(|channel| channel.title.contains(&name))
-                    .copied()
                     .collect();
                 let mut items = Vec::new();
                 for channel in filtered_channels {
@@ -110,14 +109,14 @@ mod tests {
 
         // Empty channel is added, but doesn't affect number of items
         let channel = Channel::default();
-        channel_collection.push(&channel);
+        channel_collection.push(channel);
         assert_eq!(channel_collection.channels().len(), 1);
         assert_eq!(channel_collection.items().len(), 0);
 
         // Channel with items is added, and items are added to the item collection
         let mut channel2 = Channel::default();
         channel2.set_items(vec![Item::default()]);
-        channel_collection.push(&channel2);
+        channel_collection.push(channel2);
 
         assert_eq!(channel_collection.channels().len(), 2);
         assert_eq!(channel_collection.items().len(), 1);
@@ -142,7 +141,7 @@ mod tests {
         item2.set_description(String::from("Description 2 aaaa"));
 
         channel.set_items(vec![item1, item2]);
-        channel_collection.push(&channel);
+        channel_collection.push(channel);
 
         let mut channel = Channel::default();
         channel.set_title("b Channel 2".to_string());
@@ -153,7 +152,7 @@ mod tests {
         item1.set_description(String::from("Description 3 aa"));
 
         channel.set_items(vec![item1]);
-        channel_collection.push(&channel);
+        channel_collection.push(channel);
 
         let mut channel = Channel::default();
         channel.set_title("a Channel 3".to_string());
@@ -164,7 +163,7 @@ mod tests {
         item1.set_description(String::from("Description 4 aaa"));
 
         channel.set_items(vec![item1]);
-        channel_collection.push(&channel);
+        channel_collection.push(channel);
 
         assert_eq!(channel_collection.channels().len(), 3);
         assert_eq!(channel_collection.items().len(), 4);
@@ -212,7 +211,7 @@ mod tests {
         item2.set_description(String::from("Description 2 aaaa"));
 
         channel.set_items(vec![item1, item2]);
-        channel_collection.push(&channel);
+        channel_collection.push(channel);
 
         let mut channel = Channel::default();
         channel.set_title("b Channel 2".to_string());
@@ -223,7 +222,7 @@ mod tests {
         item1.set_description(String::from("Description 3 aa"));
 
         channel.set_items(vec![item1]);
-        channel_collection.push(&channel);
+        channel_collection.push(channel);
 
         let mut channel = Channel::default();
         channel.set_title("a Channel 3".to_string());
@@ -234,7 +233,7 @@ mod tests {
         item1.set_description(String::from("Description 4 aaa"));
 
         channel.set_items(vec![item1]);
-        channel_collection.push(&channel);
+        channel_collection.push(channel);
 
         assert_eq!(channel_collection.channels().len(), 3);
         assert_eq!(channel_collection.items().len(), 4);
