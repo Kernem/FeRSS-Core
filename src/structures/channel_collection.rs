@@ -8,33 +8,27 @@ use super::item_collection::ItemCollection;
 use crate::processing::enums::{ChannelFilterType, ChannelSortType};
 
 /// A collection of channels.
-pub struct ChannelCollection<'a> {
+pub struct ChannelCollection {
     channels: Vec<Channel>,
-    /// Keeping a direct reference to the items will hopefully speed up some retrievals.
-    items: ItemCollection<'a>,
 }
 
-impl<'a> Default for ChannelCollection<'a> {
+impl<'a> Default for ChannelCollection {
     fn default() -> Self {
         Self::new()
     }
 }
 
 /// Function implementations for ChannelCollection.
-impl<'a> ChannelCollection<'a> {
+impl ChannelCollection {
     /// Create a new empty ChannelCollection.
-    pub fn new() -> ChannelCollection<'a> {
+    pub fn new() -> ChannelCollection {
         ChannelCollection {
             channels: vec![],
-            items: ItemCollection::new(),
         }
     }
 
     /// Push a new channel to the collection.
     pub fn push(&mut self, channel: Channel) {
-        for item in channel.items() {
-            self.items.push(item);
-        }
         self.channels.push(channel);
     }
 
@@ -47,13 +41,21 @@ impl<'a> ChannelCollection<'a> {
         channels
     }
 
+    fn item_collection(&self) -> ItemCollection {
+        let mut collection = ItemCollection::new();
+        for channel in &self.channels {
+            for item in channel.items() {
+                collection.push(item);
+            }
+        }
+        collection
+
+    }
+
     /// Return a reference to the items.
     pub fn items(&self) -> Vec<&Item> {
-        let mut items: Vec<&Item> = vec![];
-        for item in self.items.items() {
-            items.push(<&Item>::clone(item));
-        }
-        items
+        let item_collection = self.item_collection();
+        item_collection.items()
     }
 
     /// Sort the items in the collection and return a reference to them.
@@ -63,7 +65,7 @@ impl<'a> ChannelCollection<'a> {
     pub fn sort(&mut self, sort_type: ChannelSortType) -> Vec<&Item> {
         match sort_type {
             ChannelSortType::ItemSortType(item_sort_type) => {
-                self.items.sort(item_sort_type);
+                self.item_collection().sort(item_sort_type);
             }
             ChannelSortType::Publisher => {
                 self.channels.sort_by(|a, b| a.title().cmp(b.title()));
@@ -76,7 +78,11 @@ impl<'a> ChannelCollection<'a> {
     /// This does *not* remove any items from the actual collection, rather it returns a new vector containing references to the collection's items. 
     pub fn filter(&mut self, filter_type: ChannelFilterType) -> Vec<&Item> {
         match filter_type {
-            ChannelFilterType::ItemFilterType(filter_type) => self.items.filter(filter_type),
+            ChannelFilterType::ItemFilterType(filter_type) => {
+                let mut collection = self.item_collection();
+                collection.filter(filter_type);
+                collection.items()
+            },
             ChannelFilterType::Name(name) => {
                 let filtered_channels: Vec<&Channel> = self
                     .channels
