@@ -37,11 +37,11 @@ impl<'a> SafeItem<'a> {
         }
 
         SafeItem {
-            title: title,
-            link: link,
-            description: description,
-            pub_date: pub_date,
-            author: author,
+            title,
+            link,
+            description,
+            pub_date,
+            author,
         }
     }
 }
