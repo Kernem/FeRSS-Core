@@ -1,12 +1,5 @@
 //! Sorting and Filtering enums.
 
-/// Defines how a ChannelCollection should be sorted.
-pub enum ChannelSortType {
-    /// Sort by items.
-    ItemSortType(ItemSortType),
-    /// Sort by the channel's publisher.
-    Publisher,
-}
 
 /// Defines how an ItemCollection should be sorted,
 pub enum ItemSortType {
@@ -16,14 +9,8 @@ pub enum ItemSortType {
     Date,
     /// Sort by the item's length.
     Length,
-}
-
-/// Defines how a ChannelCollection should be filtered.
-pub enum ChannelFilterType {
-    /// Filter by items.
-    ItemFilterType(ItemFilterType),
-    /// Filter by the channel's name. Ensuring that the name matches the string.
-    Name(String),
+    /// Sort by the item's source
+    Source,
 }
 
 /// Defines how an ItemCollection should be filtered.
@@ -34,4 +21,6 @@ pub enum ItemFilterType {
     Date(String),
     /// Filter by the item's length. Ensuring that the description is smaller than usize
     Length(usize),
+    /// Filter by the item's source. Ensuring that the source matches the string
+    Source(String),
 }
