@@ -5,7 +5,7 @@ use rss::{Channel, Item};
 
 // Local Imports
 use super::item_collection::ItemCollection;
-use crate::enums::{ItemSortType, ItemFilterType};
+use crate::enums::{ItemFilterType, ItemSortType};
 
 /// A collection of channels.
 pub struct ChannelCollection {
@@ -22,9 +22,7 @@ impl<'a> Default for ChannelCollection {
 impl ChannelCollection {
     /// Create a new empty ChannelCollection.
     pub fn new() -> ChannelCollection {
-        ChannelCollection {
-            channels: vec![],
-        }
+        ChannelCollection { channels: vec![] }
     }
 
     /// Push a new channel to the collection.
@@ -49,7 +47,6 @@ impl ChannelCollection {
             }
         }
         collection
-
     }
 
     /// Return a reference to the items.
@@ -69,7 +66,7 @@ impl ChannelCollection {
     }
 
     /// Filter the items in the collection and return a reference to them.
-    /// This does *not* remove any items from the actual collection, rather it returns a new vector containing references to the collection's items. 
+    /// This does *not* remove any items from the actual collection, rather it returns a new vector containing references to the collection's items.
     pub fn filter(&mut self, filter_type: ItemFilterType) -> ItemCollection {
         let mut items = self.item_collection();
         items.filter(filter_type);
@@ -109,7 +106,6 @@ mod tests {
 
     #[test]
     fn test_channel_collection_sort() {
-        
         let mut channel_collection = ChannelCollection::new();
 
         // Add a couple of channels with items in them as well as a title
@@ -261,13 +257,16 @@ mod tests {
             channel_collection.filter(ItemFilterType::Source(String::from("A")));
         assert_eq!(filtered_collection.items().len(), 2);
 
-        let filtered_collection = channel_collection.filter(ItemFilterType::Title(String::from("b")));
+        let filtered_collection =
+            channel_collection.filter(ItemFilterType::Title(String::from("b")));
         assert_eq!(filtered_collection.items().len(), 1);
 
         let filtered_collection = channel_collection.filter(ItemFilterType::Length(17));
         assert_eq!(filtered_collection.items().len(), 3);
 
-        let filtered_collection = channel_collection.filter(ItemFilterType::Date(String::from("Mon, 02 Jan 2017 12:00:00 GMT")));
+        let filtered_collection = channel_collection.filter(ItemFilterType::Date(String::from(
+            "Mon, 02 Jan 2017 12:00:00 GMT",
+        )));
         assert_eq!(filtered_collection.items().len(), 3);
 
         // Check that the original collection is unchanged

@@ -6,7 +6,6 @@ pub struct SafeItem<'a> {
     description: &'a str,
     pub_date: &'a str,
     author: &'a str,
-
 }
 
 impl<'a> SafeItem<'a> {

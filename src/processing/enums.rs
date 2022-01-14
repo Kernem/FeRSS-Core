@@ -1,6 +1,5 @@
 //! Sorting and Filtering enums.
 
-
 /// Defines how an ItemCollection should be sorted,
 pub enum ItemSortType {
     /// Sort by the item's title.

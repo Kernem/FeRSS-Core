@@ -1,11 +1,11 @@
 //! Definition and implementation of the item collection.
 
 // Standard Library Imports
-use std::{cmp::Ordering};
+use std::cmp::Ordering;
 
 // External Imports
-use rss::Item;
 use chrono::prelude::*;
+use rss::Item;
 
 // Local Imports
 use crate::processing::enums::{ItemFilterType, ItemSortType};
@@ -43,8 +43,18 @@ impl<'a> ItemCollection<'a> {
     pub fn sort(&mut self, sort_type: ItemSortType) {
         match sort_type {
             ItemSortType::Title => self.items.sort_by(|a, b| a.title().cmp(&b.title())),
-            ItemSortType::Source => self.items.sort_by(|a, b| a.source().unwrap().title().unwrap().cmp(b.source().unwrap().title().unwrap())),
-            ItemSortType::Date => self.items.sort_by(|a, b| DateTime::parse_from_rfc2822(a.pub_date().unwrap()).unwrap().cmp(&DateTime::parse_from_rfc2822(b.pub_date().unwrap()).unwrap())),
+            ItemSortType::Source => self.items.sort_by(|a, b| {
+                a.source()
+                    .unwrap()
+                    .title()
+                    .unwrap()
+                    .cmp(b.source().unwrap().title().unwrap())
+            }),
+            ItemSortType::Date => self.items.sort_by(|a, b| {
+                DateTime::parse_from_rfc2822(a.pub_date().unwrap())
+                    .unwrap()
+                    .cmp(&DateTime::parse_from_rfc2822(b.pub_date().unwrap()).unwrap())
+            }),
             ItemSortType::Length => self.items.sort_by(|a, b| {
                 if let Some(a_description) = a.description() {
                     if let Some(b_description) = b.description() {
@@ -60,8 +70,8 @@ impl<'a> ItemCollection<'a> {
     }
 
     /// Filter the items in the collection.
-    /// This *does* remove any items from the actual collection. 
-    pub fn filter(&mut self, filter_type: ItemFilterType){
+    /// This *does* remove any items from the actual collection.
+    pub fn filter(&mut self, filter_type: ItemFilterType) {
         match filter_type {
             ItemFilterType::Title(filter_title) => {
                 self.items.retain(|item| {
@@ -97,7 +107,8 @@ impl<'a> ItemCollection<'a> {
             ItemFilterType::Date(filter_date) => {
                 self.items.retain(|item| {
                     if let Some(date) = item.pub_date() {
-                        DateTime::parse_from_rfc2822(date).unwrap() <= DateTime::parse_from_rfc2822(&filter_date).unwrap()
+                        DateTime::parse_from_rfc2822(date).unwrap()
+                            <= DateTime::parse_from_rfc2822(&filter_date).unwrap()
                     } else {
                         false
                     }
@@ -240,7 +251,6 @@ mod tests {
 
         item_collection.filter(ItemFilterType::Title(String::from("a")));
         assert_eq!(item_collection.items().len(), 2);
-
     }
 
     #[test]
@@ -269,7 +279,6 @@ mod tests {
 
         item_collection.filter(ItemFilterType::Length(2));
         assert_eq!(item_collection.items().len(), 2);
-
     }
 
     #[test]
@@ -296,9 +305,10 @@ mod tests {
         item_collection.push(&item3);
         item_collection.push(&item2);
 
-        item_collection.filter(ItemFilterType::Date(String::from("Mon, 02 Jan 2017 12:00:00 GMT")));
+        item_collection.filter(ItemFilterType::Date(String::from(
+            "Mon, 02 Jan 2017 12:00:00 GMT",
+        )));
         assert_eq!(item_collection.items().len(), 2);
-
     }
 
     #[test]
@@ -334,8 +344,9 @@ mod tests {
         item_collection.push(&item3);
         item_collection.push(&item2);
 
-        item_collection.filter(ItemFilterType::Date(String::from("Mon, 02 Jan 2017 12:00:00 GMT")));
+        item_collection.filter(ItemFilterType::Date(String::from(
+            "Mon, 02 Jan 2017 12:00:00 GMT",
+        )));
         assert_eq!(item_collection.items().len(), 2);
-
     }
 }
