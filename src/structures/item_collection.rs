@@ -43,8 +43,8 @@ impl<'a> ItemCollection<'a> {
     pub fn sort(&mut self, sort_type: ItemSortType) {
         match sort_type {
             ItemSortType::Title => self.items.sort_by(|a, b| a.title().cmp(&b.title())),
-            ItemSortType::Source => self.items.sort_by(|a, b| a.source().unwrap().title().unwrap().cmp(&b.source().unwrap().title().unwrap())),
-            ItemSortType::Date => self.items.sort_by(|a, b| DateTime::parse_from_rfc2822(a.pub_date().unwrap()).unwrap().cmp(&DateTime::parse_from_rfc2822(&b.pub_date().unwrap()).unwrap())),
+            ItemSortType::Source => self.items.sort_by(|a, b| a.source().unwrap().title().unwrap().cmp(b.source().unwrap().title().unwrap())),
+            ItemSortType::Date => self.items.sort_by(|a, b| DateTime::parse_from_rfc2822(a.pub_date().unwrap()).unwrap().cmp(&DateTime::parse_from_rfc2822(b.pub_date().unwrap()).unwrap())),
             ItemSortType::Length => self.items.sort_by(|a, b| {
                 if let Some(a_description) = a.description() {
                     if let Some(b_description) = b.description() {
